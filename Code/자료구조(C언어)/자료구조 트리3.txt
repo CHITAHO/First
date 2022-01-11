@@ -1,0 +1,251 @@
+#include<stdio.h>
+
+#include<stdlib.h>
+
+#include<string.h>
+
+
+
+struct node {
+
+	int number;
+
+	struct node *left;
+
+	struct node *right;
+
+};
+
+
+
+void freeTree(struct node *tree){
+
+	if (tree == NULL) {
+
+		return;
+
+	}
+
+	freeTree(tree->left);
+
+	freeTree(tree->right);
+
+	free(tree);
+
+}
+
+
+
+void preorder(struct node *tree){
+
+	if (tree == NULL) {
+
+		return;
+
+	}
+
+	printf(" %d", tree->number);
+
+	preorder(tree->left);
+
+	preorder(tree->right);
+
+}
+
+
+
+void addLeftRight(struct node *tree, int value1, int value2, int value3){
+
+	if (tree == NULL) {
+
+		return;
+
+	}
+
+	struct node *leftchild = (struct node*)malloc(sizeof(struct node));
+
+	struct node *rightchild = (struct node*)malloc(sizeof(struct node));
+
+	leftchild->number = value2;
+
+	rightchild->number = value3;
+
+	leftchild->left = NULL;
+
+	leftchild->right = NULL;
+
+	rightchild->left = NULL;
+
+	rightchild->right = NULL;
+
+	if (tree->number == value1){
+
+		if (value2 == 0){
+
+			tree->left = NULL;
+
+			free(leftchild);
+
+		}
+
+		else{
+
+			tree->left = leftchild;
+
+		}
+
+		if (value3 == 0){
+
+			tree->right = NULL;
+
+			free(rightchild);
+
+		}
+
+		else{
+
+			tree->right = rightchild;
+
+		}
+
+	}
+
+	else{
+
+		free(leftchild);
+
+		free(rightchild);
+
+	}
+
+	addLeftRight(tree->left, value1, value2, value3);
+
+	addLeftRight(tree->right, value1, value2, value3);
+
+}
+
+
+
+void search(struct node *root, char tree[100]){
+
+	printf(" %d", root->number);
+
+	for (int i = 0; i < strlen(tree); i++){
+
+		if (tree[i] == 'R'){
+
+			root = root->right;
+
+		}
+
+		else if (tree[i] == 'L'){
+
+			root = root->left;
+
+		}
+
+		else{
+
+			return;
+
+		}
+
+		printf(" %d", root->number);
+
+	}
+
+	printf("\n");
+
+}
+
+
+
+void main(){
+
+	int nodeNumber, value1, value2, value3, searchNumber;
+
+	struct node *root, *tree = (struct node*)malloc(sizeof(struct node));
+
+	char searchInfomation[100];
+
+	root = tree;
+
+	scanf("%d", &nodeNumber);
+
+	for (int i = 0; i < nodeNumber; i++){
+
+		scanf("%d", &value1);
+
+		scanf("%d", &value2);
+
+		scanf("%d", &value3);
+
+		if (i == 0) {
+
+			struct node *leftchild = (struct node*)malloc(sizeof(struct node));
+
+			struct node *rightchild = (struct node*)malloc(sizeof(struct node));
+
+			tree->number = value1;
+
+			leftchild->number = value2;
+
+			rightchild->number = value3;
+
+			leftchild->left = NULL;
+
+			leftchild->right = NULL;
+
+			rightchild->left = NULL;
+
+			rightchild->right = NULL;
+
+			if (value2 != 0){
+
+				root->left = leftchild;
+
+			}
+
+			else{
+
+				free(leftchild);
+
+			}
+
+			if (value3 != 0){
+
+				root->right = rightchild;
+
+			}
+
+			else{
+
+				free(rightchild);
+
+			}
+
+		}
+
+		else {
+
+			addLeftRight(root, value1, value2, value3);
+
+		}
+
+	}
+
+	scanf("%d", &searchNumber);
+
+	for (int i = 0; i < searchNumber; i++){
+
+		getchar();
+
+		scanf("%s", searchInfomation);
+
+		search(root, searchInfomation);
+
+	}
+
+	freeTree(root);
+
+}

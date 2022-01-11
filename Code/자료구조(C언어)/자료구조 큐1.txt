@@ -1,0 +1,129 @@
+#include<stdio.h>
+
+#include<stdlib.h>
+
+
+
+int *queue, queueSize, rear, front;
+
+
+
+void printQueue(){
+
+	for (int i = 0; i < queueSize; i++){
+
+		printf(" %d", queue[i]);
+
+	}
+
+	printf("\n");
+
+}
+
+
+
+void enqueue(int value){
+
+	if ((rear + 1) % queueSize == front % queueSize){
+
+		printf("overflow");
+
+		printQueue(queue, queueSize);
+
+		free(queue);
+
+		exit(1);
+
+	}
+
+	rear = (++(rear)) % queueSize;
+
+	queue[rear] = value;
+
+}
+
+
+
+int dequeue(){
+
+	int value;
+
+	if (rear % queueSize == front % queueSize){
+
+		printf("underflow");
+
+		free(queue);
+
+		exit(1);
+
+	}
+
+	else{
+
+		front = (++(front)) % queueSize;
+
+		value = queue[front - 1];
+
+		queue[front] = 0;
+
+		return value;
+
+	}
+
+}
+
+
+
+void main(){
+
+	char select;
+
+	int calculateSize, value;
+
+	rear = 0;
+
+	front = 0;
+
+	scanf("%d", &queueSize);
+
+	queue = (int *)malloc(sizeof(int)*queueSize);
+
+	for (int i = 0; i < queueSize; i++){
+
+		queue[i] = 0;
+
+	}
+
+	scanf("%d", &calculateSize);
+
+	for (int i = 0; i < calculateSize; i++){
+
+		getchar();
+
+		scanf("%c", &select);
+
+		if (select == 'I'){
+
+			scanf("%d", &value);
+
+			enqueue(value);
+
+		}
+
+		else if (select == 'D'){
+
+			dequeue();
+
+		}
+
+		else if (select == 'P'){
+
+			printQueue();
+
+		}
+
+	}
+
+	free(queue);
+
+}
