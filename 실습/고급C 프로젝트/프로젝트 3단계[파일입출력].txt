@@ -1,0 +1,255 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#pragma warning(disable:4996)
+
+typedef struct people {
+	char *name;
+	char *phone;
+	char *birth;
+}PEOPLE;
+
+void swap(PEOPLE* a, PEOPLE* b)
+{
+	PEOPLE tmp;
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
+}
+void sort(int n, PEOPLE* peoples)
+{
+	PEOPLE* p, * q;
+
+	for (p = peoples; p < peoples + n; p++)
+	{
+		for (q = peoples + n - 1; q > p; q--)
+		{
+			if (strcmp(q->name, (q - 1)->name) < 0)
+			{
+				swap(q, q - 1);
+			}
+		}
+	}
+}
+int input(char* str, int remit)//입력에 에러 있으면 1, 없으면 0
+{
+	char* p;
+	gets(str);
+	if (*(str + remit) != 0)
+	{
+		printf("OVERFLOW\n");
+		return 1;
+	}
+	return 0;
+}
+int regist(int n, PEOPLE* peoples)
+{
+	PEOPLE* p = peoples + n;
+	char name[101] = { 0 }, phone[101] = { 0 }, birth[101] = { 0 };
+
+	printf("Name:");
+	if (input(name, 100))
+		return;
+	printf("Phone_number:");
+	if (input(phone, 100))
+		return;
+	printf("Birth:");
+	if (input(birth, 100))
+		return;
+
+	p->name = (char*)malloc(sizeof(char) * (strlen(name) + 1));
+	strcpy(p->name, name);
+	p->phone = (char*)malloc(sizeof(char) * (strlen(phone) + 1));
+	strcpy(p->phone, phone);
+	p->birth = (char*)malloc(sizeof(char) * (strlen(birth) + 1));
+	strcpy(p->birth, birth);
+
+	n++;
+
+	//printf("test: sorting\n");
+	//printf("%s %s\n", p->name, p->phone);
+	sort(n, peoples);
+	printf("<<%d>>\n", n);
+	return n;
+}
+int RegFromFile(int n, int max, PEOPLE* peoples)
+{
+	PEOPLE* p;
+	FILE* f;
+	char tmp[303];
+	char *points[2];
+	char* c, ** t;
+
+	f = fopen("PHONE_BOOK.txt", "r");
+	while (!feof(f))
+	{
+		p = peoples + n;
+
+		if (n >= max)
+		{
+			printf("OVERFLOW\n");
+			break;
+		}
+
+		fgets(tmp, 303, f);//한줄 입력
+
+		t = points;
+		for (c = tmp; *c; c++)
+			if (*c == ' ')//띄어쓰기 널로 치환
+			{
+				*c = 0;
+				*t++ = (c + 1);//새 정보 시작점 기록
+			}
+
+		*(c - 1) = 0;//개행문자 널로 변환
+
+		p->name = (char*)malloc(sizeof(char) * (strlen(tmp) + 1));
+		strcpy(p->name, tmp);
+		p->phone = (char*)malloc(sizeof(char) * (strlen(points[0]) + 1));
+		strcpy(p->phone, points[0]);
+		p->birth = (char*)malloc(sizeof(char) * (strlen(points[1]) + 1));
+		strcpy(p->birth, points[1]);
+
+		//printf("saved %s\n", p->name);
+
+		n++;
+		sort(n, peoples);
+	}
+	fclose(f);
+
+	return n;
+}
+void showAll(int n, PEOPLE* peoples)
+{
+	PEOPLE* p;
+	for (p = peoples; p < peoples + n; p++)
+		printf("%s %s %s\n", p->name, p->phone, p->birth);
+}
+int del(int n, PEOPLE* peoples)
+{
+	char query[21] = { 0 };
+	PEOPLE* p;
+	int flag = 1;
+
+	if (n == 0)
+	{
+		printf("NO MEMBER\n");
+		return 0;
+	}
+
+	printf("Name:");
+	gets(query);
+
+	for (p = peoples; p < peoples + n; p++)
+		if (!strcmp(query, p->name))
+		{
+			flag = 0;
+			break;
+		}
+
+	if (flag)
+	{
+		printf("NO MEMBER\n");
+		return n;
+	}
+
+	for (p; p < peoples + n - 1; p++)
+		swap(p, p + 1);
+	n = n - 1;
+	return n;
+}
+void find(int n, PEOPLE* peoples)
+{
+	char query[3] = { 0 };
+	int q, c;
+	PEOPLE* p;
+
+	printf("Birth:");
+	gets(query);
+
+	q = atoi(query);
+
+	for (p = peoples; p < peoples + n; p++)
+	{
+		query[0] = p->birth[4];
+		query[1] = p->birth[5];
+
+		c = atoi(query);
+
+		if (q == c)
+			printf("%s %s %s\n", p->name, p->phone, p->birth);
+	}
+}
+
+int start(int max_num, PEOPLE* peoples)
+{
+	int c;
+	int n = 0;
+	PEOPLE* p;
+	while (1)
+	{
+		printf("*****Menu*****\n");
+		printf("<1.Registration><2.ShowAll><3.Delete><4.FindByBirth><5.RegFromFile ><6.Exit>\n");
+		printf("Enter_the_menu_number:");
+		scanf("%d", &c);
+		getchar();
+
+		if (c == 1)//Registration
+			if (n < max_num)
+				n = regist(n, peoples);
+			else
+				printf("OVERFLOW\n");
+		if (c == 2)//show all
+			showAll(n, peoples);
+		if (c == 3)//delete
+			n = del(n, peoples);
+		if (c == 4)//Find By Birth
+			find(n, peoples);
+		if (c == 5)//Register From File
+			n = RegFromFile(n, max_num, peoples);
+		if (c == 6)//Exit
+			return n;
+	}
+}
+
+void end(int n, PEOPLE* peoples)
+{
+	PEOPLE* p;
+	FILE* f;
+
+	f = fopen("PHONE_BOOK.txt", "w");
+
+	for (p = peoples; p < peoples + n; p++)
+	{
+		fputs(p->name, f);
+		fputc(' ', f);
+		fputs(p->phone, f);
+		fputc(' ', f);
+		fputs(p->birth, f);
+		if (p < peoples + n - 1)//마지막엔 개행 안함
+			fputc('\n', f);
+
+		free(p->name);
+		free(p->phone);
+		free(p->birth);
+	}
+	fclose(f);
+	free(peoples);
+}
+
+int main()
+{
+	PEOPLE *peoples;
+	int max_num;
+	int n;
+
+	printf("Max_num:"); // 고정
+	scanf("%d", &max_num);
+
+	peoples = (PEOPLE*)malloc(sizeof(PEOPLE) * max_num);
+
+	n = start(max_num, peoples);
+	end(n, peoples);//save and free
+
+	return 0;
+}

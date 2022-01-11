@@ -1,0 +1,135 @@
+#include<stdio.h>
+
+#include<stdlib.h>
+
+
+
+struct node {
+
+	int data;
+
+	struct node *left;
+
+	struct node *right;
+
+};
+
+
+
+void addLeftchild(struct node *parent, int value){
+
+	struct node *newnode = (struct node*)malloc(sizeof(struct node));
+
+	newnode->data = value;
+
+	newnode->left = NULL;
+
+	newnode->right = NULL;
+
+	parent->left = newnode;
+
+}
+
+
+
+void addRightchild(struct node *parent, int value){
+
+	struct node *newnode = (struct node*)malloc(sizeof(struct node));
+
+	newnode->data = value;
+
+	newnode->left = NULL;
+
+	newnode->right = NULL;
+
+	parent->right = newnode;
+
+}
+
+
+
+void main(){
+
+	int number;
+
+	struct node *root = (struct node*)malloc(sizeof(struct node));
+
+	struct node *F[8];
+
+	root->data = 20;
+
+	root->left = NULL;
+
+	root->right = NULL;
+
+	addLeftchild(root, 30);
+
+	addRightchild(root, 50);
+
+	addLeftchild(root->left, 70);
+
+	addRightchild(root->left, 90);
+
+	addRightchild(root->right, 120);
+
+	addLeftchild(root->right->right, 130);
+
+	addRightchild(root->right->right, 80);
+
+	F[0] = root;
+
+	F[1] = root->left;
+
+	F[2] = root->right;
+
+	F[3] = root->left->left;
+
+	F[4] = root->left->right;
+
+	F[5] = root->right->right;
+
+	F[6] = root->right->right->left;
+
+	F[7] = root->right->right->right;
+
+	scanf("%d", &number);
+
+	for (int i = 0; i < 8; i++) {
+
+		if (i == number - 1) {
+
+			printf("%d", F[i]->data);
+
+			if (F[i]->left != NULL) {
+
+				printf(" %d", F[i]->left->data);
+
+			}
+
+			if (F[i]->right != NULL) {
+
+				printf(" %d", F[i]->right->data);
+
+			}
+
+			printf("\n");
+
+			break;
+
+		}
+
+		if (i == 7) {
+
+			printf("-1\n");
+
+		}
+
+	}
+
+	for (int i = 0; i < 8; i++) {
+
+		free(F[i]);
+
+	}
+
+}
