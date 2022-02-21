@@ -15,5 +15,5 @@
 - <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=Node.js&logoColor=black">
 
 
-## Contact
-<a href="https://xogh2120@gmail.com/xogh2120@gmail.com/"><img src="https://img.shields.io/badge/Gmail-EA4335?style=for-the-badge&logo=Gmail&logoColor=black">
+## <img src="https://img.shields.io/badge/mail-EA4335?style=for-the-badge&logo=Gmail&logoColor=black">
+xogh2132@naver.com
