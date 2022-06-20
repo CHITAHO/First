@@ -1,0 +1,201 @@
+#define _CRT_SECURE_NO_WARNINGS
+#pragma warning(disable:4996)
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+struct node {
+
+	int coef;
+
+	int exp;
+
+	struct node* next;
+
+};
+
+
+
+void addTerm(struct node* head, int coef, int exp) {
+
+	struct node* newnode = (struct node*)malloc(sizeof(struct node));
+
+	newnode->coef = coef;
+
+	newnode->exp = exp;
+
+	newnode->next = NULL;
+
+	while (head->next != NULL) {
+
+		head = head->next;
+
+	}
+
+	head->next = newnode;
+
+}
+
+
+
+struct node* addPoly(struct node* firstPolynomial, struct node* secondPolynomial) {
+
+	struct node* first = firstPolynomial->next;
+
+	struct node* second = secondPolynomial->next;
+
+	struct node* sumPolynomial = (struct node*)malloc(sizeof(struct node));
+
+	sumPolynomial->next = NULL;
+
+
+
+	int zeroCheck;
+
+	while ((first != NULL) && (second != NULL)) {
+
+		if (first->exp > second->exp) {
+
+			addTerm(sumPolynomial, first->coef, first->exp);
+
+			first = first->next;
+
+		}
+
+		else if (first->exp < second->exp) {
+
+			addTerm(sumPolynomial, second->coef, second->exp);
+
+			second = second->next;
+
+		}
+
+		else {
+
+			zeroCheck = first->coef + second->coef;
+
+			if (zeroCheck != 0) {
+
+				addTerm(sumPolynomial, zeroCheck, first->exp);
+
+			}
+
+			first = first->next;
+
+			second = second->next;
+
+		}
+
+	}
+
+	while (first != NULL) {
+
+		addTerm(sumPolynomial, first->coef, first->exp);
+
+		first = first->next;
+
+	}
+
+	while (second != NULL) {
+
+		addTerm(sumPolynomial, second->coef, second->exp);
+
+		second = second->next;
+
+	}
+
+	return sumPolynomial;
+
+}
+
+
+
+void printPolynomial(struct node* header) {
+
+	struct node* ptr = header->next;
+
+	while (ptr != NULL) {
+
+		printf("%d %d ", ptr->coef, ptr->exp);
+
+		ptr = ptr->next;
+
+	}
+
+	printf("\n");
+
+}
+
+
+
+void freePolynomial(struct node* header) {
+
+	struct node* ptr = header;
+
+	while (ptr != NULL) {
+
+		header = header->next;
+
+		free(ptr);
+
+		ptr = header;
+
+	}
+
+}
+
+
+
+void main() {
+
+	int polynomialNumber, coef, exp;
+
+	struct node* firstPolynomial = (struct node*)malloc(sizeof(struct node));
+
+	struct node* secondPolynomial = (struct node*)malloc(sizeof(struct node));
+
+	struct node* sumPolynomial;
+
+	firstPolynomial->next = NULL;
+
+	secondPolynomial->next = NULL;
+
+	scanf("%d", &polynomialNumber);
+
+	for (int i = 0; i < polynomialNumber; i++) {
+
+		scanf("%d", &coef);
+
+		scanf("%d", &exp);
+
+		addTerm(firstPolynomial, coef, exp);
+
+	}
+
+	scanf("%d", &polynomialNumber);
+
+	for (int i = 0; i < polynomialNumber; i++) {
+
+		scanf("%d", &coef);
+
+		scanf("%d", &exp);
+
+		addTerm(secondPolynomial, coef, exp);
+
+	}
+
+	sumPolynomial = addPoly(firstPolynomial, secondPolynomial);
+
+
+
+	printPolynomial(sumPolynomial);
+
+
+
+	freePolynomial(firstPolynomial);
+
+	freePolynomial(secondPolynomial);
+
+	freePolynomial(sumPolynomial);
+
+}
